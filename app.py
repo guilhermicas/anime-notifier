@@ -6,7 +6,6 @@ Verificar se o numero do EP guardado localmente é menor que o último que foi l
 
 import requests
 from bs4 import BeautifulSoup
-from plyer import notification
 import re
 import os
 
@@ -93,14 +92,9 @@ def checkIfNewEpisode():
 if __name__ == "__main__":
     if(checkIfNewEpisode()):
         print("T")
-    else:
-        print("F")
-        # noti = notification.notify(title="Novo episódio!",
-        # message="Saiu um novo episódio!", timeout=10)
 
 # TODO:
 # Ao clicar na notificação:
 # abrir neste link:
-# novo_ep_link = "https://lite.animevibe.wtf/anime/one-piece/"+str(ultimo_ep)
+# novo_ep_link = "https://lite.animevibe.wtf/anime/one-piece/"+str(ultimo_ep)(CHECK)
 # E incrementar ultimo_episodio_visto no ficheiro de configuração
-# notification.onclick(novo_ep_link)
