@@ -9,11 +9,8 @@ from bs4 import BeautifulSoup
 import re
 import os
 
-html_doc = requests.get(
-    "https://onepiece.fandom.com/wiki/One_Piece_Wiki")
-
 # caminho do ficheiro com o EP guardado
-FILEPATH = "/home/gui/.config/i3/scripts/OnePieceNotifier/ultimo_ep.cfg"
+FILEPATH = "/home/gui/.config/i3/scripts/OnePieceNotifier/eps.txt"
 
 
 def checkStringInt(string: str):
@@ -26,15 +23,17 @@ def checkStringInt(string: str):
 
 
 def escreverFicheiroConfig():
+    ultimo_ep_visto = 0
     # criar ficheiro e inserir ultimo EP
     with open(FILEPATH, "w+") as f:
         # TODO:janela para pedir o ultimo ep
-        ultimo_ep_visto = 0
         while(True):
             ultimo_ep_visto = input("Qual foi o ultimo ep que viu?")
             if(checkStringInt(ultimo_ep_visto)):
-                f.write(ultimo_ep_visto)
-                return int(ultimo_ep_visto)
+                f.write(ultimo_ep_visto+"\n"+"gaming")
+                break
+
+    return int(ultimo_ep_visto)
 
 
 def corrigirFicheiroConfig():
@@ -47,7 +46,7 @@ def corrigirFicheiroConfig():
     return escreverFicheiroConfig()
 
 
-def fetchUltimoEp():
+def fetchUltimoEpVisto():
     if not os.path.isfile(FILEPATH):
         print('Ficheiro não existe, a criar um novo ficheiro de configuração')
 
@@ -60,7 +59,7 @@ def fetchUltimoEp():
         # se o ficheiro nao tiver nenhum registo
         if(not conteudo):
             print("Ficheiro de configuração vazio, a recriar")
-            corrigirFicheiroConfig()
+            return corrigirFicheiroConfig()
 
         for line in conteudo:
             # Se o que tiver na linha nao for numero de episódio, entao recriar ficheiro de configuração
@@ -69,7 +68,9 @@ def fetchUltimoEp():
             return int(line)
 
 
-def checkIfNewEpisode():
+def fetchLastReleasedEP():
+    html_doc = requests.get(
+        "https://onepiece.fandom.com/wiki/One_Piece_Wiki")
     if(html_doc.status_code == 200):
         soup = BeautifulSoup(html_doc.content, 'html.parser')
 
@@ -78,15 +79,37 @@ def checkIfNewEpisode():
             "^\/wiki\/Episode_\d*$"), title=re.compile("^Episode \d*"))[0].string.split(" ")[1]
         )
 
-        ultimo_episodio_visto = fetchUltimoEp()
-
-        # Se sair novo episódio mostrar notificação, ao clicar abrir na página
-        if(ultimo_ep_released > ultimo_episodio_visto):
-            return True
-        else:
-            return False
+        return ultimo_ep_released
     else:
         print("Não foi possivel verificar se saiu um novo episódio, verifique o estado da sua conexão ou o site onde se vai buscar a informação está Down")
+        return -1
+
+
+def updateLastEP(ep: int):
+    with open(FILEPATH, 'r') as file:
+        data = file.readlines()
+
+    data[1] = str(ep)
+
+    with open(FILEPATH, 'w') as file:
+        file.writelines(data)
+
+
+def checkIfNewEpisode():
+
+    ultimo_ep_released = fetchLastReleasedEP()
+    if(ultimo_ep_released == -1):
+        quit()
+    ultimo_episodio_visto = fetchUltimoEpVisto()
+
+    # Inserir o ultimo episódio que saiu na segunda linha como CACHE para nao ter que estar sempre a fazer request ao servidor, se ouver ainda algum episódio para ver
+    updateLastEP(ultimo_ep_released)
+
+    # Se sair novo episódio mostrar notificação, ao clicar abrir na página
+    if(ultimo_ep_released > ultimo_episodio_visto):
+        return True
+    else:
+        return False
 
 
 if __name__ == "__main__":
