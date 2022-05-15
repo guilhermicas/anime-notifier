@@ -10,7 +10,7 @@ import re
 import os
 
 # File path to store the latest episode
-FILEPATH = "/home/gui/.config/i3/scripts/OnePieceNotifier/eps.txt"
+FILEPATH = "./eps.txt"
 
 
 def checkStringInt(string: str):
@@ -28,7 +28,7 @@ def escreverFicheiroConfig():
     with open(FILEPATH, "w+") as f:
         # TODO:janela para pedir o ultimo ep
         while(True):
-            ultimo_ep_visto = input("Qual foi o ultimo ep que viu?")
+            ultimo_ep_visto = input("What was the last episode you saw?")
             if(checkStringInt(ultimo_ep_visto)):
                 f.write(ultimo_ep_visto+"\n"+"gaming")
                 break
@@ -40,6 +40,7 @@ def corrigirFicheiroConfig():
     # se o ficheiro existir, eliminar
     # continuar com a configuração
     print("Ficheiro de registo de ultimo episódio mal configurado, a recriar")
+    print("File that stores the last episode badly configured, deleting, attempting to create.")
     if os.path.isfile(FILEPATH):
         os.remove(FILEPATH)
 
@@ -48,7 +49,7 @@ def corrigirFicheiroConfig():
 
 def fetchUltimoEpVisto():
     if not os.path.isfile(FILEPATH):
-        print('Ficheiro não existe, a criar um novo ficheiro de configuração')
+        print('File does not exist, re-creating')
 
         return escreverFicheiroConfig()
     else:
@@ -58,7 +59,7 @@ def fetchUltimoEpVisto():
 
         # se o ficheiro nao tiver nenhum registo
         if(not conteudo):
-            print("Ficheiro de configuração vazio, a recriar")
+            print("Empty file, recreating")
             return corrigirFicheiroConfig()
 
         for line in conteudo:
@@ -81,7 +82,7 @@ def fetchLastReleasedEP():
 
         return ultimo_ep_released
     else:
-        print("Não foi possivel verificar se saiu um novo episódio, verifique o estado da sua conexão ou o site onde se vai buscar a informação está Down")
+        print("It was not possible to check if a new episode came out, the one piece wiki is problably down, or was updated")
         return -1
 
 
