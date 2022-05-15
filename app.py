@@ -9,7 +9,7 @@ from bs4 import BeautifulSoup
 import re
 import os
 
-# caminho do ficheiro com o EP guardado
+# File path to store the latest episode
 FILEPATH = "/home/gui/.config/i3/scripts/OnePieceNotifier/eps.txt"
 
 

@@ -1,7 +1,9 @@
 #!/bin/bash
 
+# THIS SCRIPT IS WHEN YOU CLICK AN ICON IN THE i3wm tray, it goes to the file where it stores the latest seen episode, and updates it with the newest, and opens browser in the latest episode
+
 site="https://animevibe.wtf/anime/one-piece/"
-EPS="/home/gui/.config/i3/scripts/OnePieceNotifier/eps.txt"
+EPS="./eps.txt"
 
 ultimo_ep_visto=$(sed -n 1p $EPS)
 ultimo_ep_released=$(sed -n 2p $EPS)
